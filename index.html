@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Component Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 800px;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button, select {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover, select:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .icon {
+            width: 50px;
+            height: 50px;
+            margin-left: 5px;
+        }
+        .footnote {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Title -->
+    <h1 id="title">Expected Number of Drone Component Boxes</h1>
+
+    <!-- Language Selector -->
+    <label for="languageSelector" id="langLabel">Select Language:</label>
+    <select id="languageSelector" onchange="switchLanguage()">
+        <option value="en">English</option>
+        <option value="ko">한국어</option>
+    </select>
+
+    <!-- Results Section -->
+    <div id="topControls">
+        <div id="results" class="results">
+            <h3 id="resultsTitle">Results:</h3>
+            <p>No results yet. Please calculate.</p>
+        </div>
+        <button id="calculateButton" onclick="calculate()">Calculate</button>
+        <button id="clearButton" onclick="clearInputs()">Clear</button>
+    </div>
+
+    <!-- Current and Desired Levels -->
+    <h2 id="current_desired_parts">1. Current and Desired Levels of Drone Components</h2>
+    <table id="levelsTable" border="1">
+        <thead>
+            <tr>
+                <th id="partHeader">Part</th>
+                <th id="currentLevelHeader">Current Level</th>
+                <th id="desiredLevelHeader">Desired Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table Rows Generated Dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Drone Components in Bag -->
+    <h2 id="boxesTitle">2. Drone Components in Bag (Levels 1–7)</h2>
+    <div>
+        <label>Level 1: <input type="number" id="boxes1" min="0" value="0"></label>
+        <label>Level 2: <input type="number" id="boxes2" min="0" value="0"></label>
+        <label>Level 3: <input type="number" id="boxes3" min="0" value="0"></label>
+        <label>Level 4: <input type="number" id="boxes4" min="0" value="0"></label>
+        <label>Level 5: <input type="number" id="boxes5" min="0" value="0"></label>
+        <label>Level 6: <input type="number" id="boxes6" min="0" value="0"></label>
+        <label>Level 7: <input type="number" id="boxes7" min="0" value="0"></label>
+    </div>
+
+    <!-- Current Parts in Bag -->
+    <h2 id="partsTitle">3. Current Parts in Bag (Levels 1–9)</h2>
+    <table id="partsTable" border="1">
+        <thead>
+            <tr>
+                <th>Level</th>
+                <th>Radar</th>
+                <th>Turbo Engine</th>
+                <th>External Armor</th>
+                <th>Thermal Imager</th>
+                <th>Fuel Cell</th>
+                <th>Airborne Missile</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows Generated Dynamically -->
+        </tbody>
+    </table>
+        <script>
+            const partsTableBody = document.querySelector("#partsTable tbody");
+                const levels = Array.from({ length: 9 }, (_, i) => i + 1);
+                
+                levels.forEach((level) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${level}</td>
+                        ${["A", "B", "C", "D", "E", "F"]
+                            .map(
+                                (section) =>
+                                    `<td><input type="number" id="parts_${section}_${level}" min="0" value="0" style="width: 60px;"></td>`
+                            )
+                            .join("")}
+                    `;
+                    partsTableBody.appendChild(row);
+                });
+        </script>
+
+    <script>
+        const translations = {
+            en: {
+                title: "Expected Number of Drone Component Boxes",
+                partsNames: ["Radar", "Turbo Engine", "External Armor", "Thermal Imager", "Fuel Cell", "Airborne Missile"],
+                current_desired_parts: "1. Current and Desired Levels of Drone Components",
+                boxesTitle: "2. Drone Components in Bag (Levels 1–7)",
+                partsTitle: "3. Current Parts in Bag (Levels 1–9)",
+                calculateButton: "Calculate",
+                clearButton: "Clear",
+                resultsTitle: "Results:",
+                noResults: "No results yet. Please calculate.",
+                requiredBoxes: "Expected number of Required Level 1 Boxes:",
+            },
+            ko: {
+                title: "드론 파츠 상자 필요수 기대값 계산기",
+                partsNames: ["레이더", "터빈 엔진", "외부 장갑", "열화상 장비", "연료 전지", "공대공 미사일"],
+                current_desired_parts: "1. 현재 및 목표 드론 파츠 수준",
+                boxesTitle: "2. 드론 파츠 가방 (레벨 1–7)",
+                partsTitle: "3. 현재 가방 내 파츠 (레벨 1–9)",
+                calculateButton: "계산",
+                clearButton: "초기화",
+                resultsTitle: "결과",
+                noResults: "아직 결과가 없습니다. 계산해 주세요.",
+                requiredBoxes: "필요한 레벨 1 상자 기대값:",
+            },
+        };
+
+        // Language switch function
+        function switchLanguage() {
+            const selectedLang = document.getElementById("languageSelector").value;
+            const lang = translations[selectedLang];
+
+            // Update labels
+            document.getElementById("title").innerText = lang.title;
+            document.getElementById("langLabel").innerText = lang.langLabel || "Select Language:";
+            document.getElementById("current_desired_parts").innerText = lang.current_desired_parts;
+            document.getElementById("boxesTitle").innerText = lang.boxesTitle;
+            document.getElementById("partsTitle").innerText = lang.partsTitle;
+            document.getElementById("calculateButton").innerText = lang.calculateButton;
+            document.getElementById("clearButton").innerText = lang.clearButton;
+            document.getElementById("resultsTitle").innerText = lang.resultsTitle;
+            document.getElementById("results").innerHTML = `
+              <h3>${lang.resultsTitle}</h3>
+              <p>${lang.noResults}</p>
+          `;
+
+            // Update part names
+            // 파츠 이름 업데이트
+            const rows = document.querySelectorAll("#levelsTable tbody tr");
+            lang.partsNames.forEach((name, index) => {
+                if (rows[index]) {
+                    rows[index].children[0].innerText = name;
+                }
+            });
+        }
+
+        // Generate table rows
+        const levelsTableBody = document.querySelector("#levelsTable tbody");
+        translations.en.partsNames.forEach((part, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${part}</td>
+                <td>
+                    <input type="number" id="current_${index}" min="0" value="7">
+                    <img id="icon_current_${index}" class="icon" src="${part.toLowerCase()}_1.jpg" alt="Current Icon">
+                </td>
+                <td>
+                    <input type="number" id="desired_${index}" min="0" value="8">
+                    <img id="icon_desired_${index}" class="icon" src="${part.toLowerCase()}_1.jpg" alt="Desired Icon">
+                </td>
+            `;
+            levelsTableBody.appendChild(row);
+        });
+
+        // Update icons dynamically
+        function updateIcons() {
+            translations.en.partsNames.forEach((part, index) => {
+                const currentLevel = document.getElementById(`current_${index}`).value;
+                const desiredLevel = document.getElementById(`desired_${index}`).value;
+
+                document.getElementById(`icon_current_${index}`).src = `${part.toLowerCase()}_${currentLevel}.jpg`;
+                document.getElementById(`icon_desired_${index}`).src = `${part.toLowerCase()}_${desiredLevel}.jpg`;
+            });
+        }
+
+        // Clear inputs and reset
+        function clearInputs() {
+            document.querySelectorAll("input[type='number']").forEach((input) => {
+                input.value = "1";
+            });
+            updateIcons();
+            switchLanguage(); // 언어별 기본 결과 텍스트 업데이트
+        }
+        function calculate() {
+            const translations = {
+                en: {
+                    resultsTitle: "Results:",
+                    requiredBoxes: "Expected number of Required Level 1 Boxes:",
+                },
+                ko: {
+                    resultsTitle: "결과:",
+                    requiredBoxes: "필요한 레벨 1 상자 기대값:",
+                },
+            };
+        
+            // Fetch selected language
+            const selectedLang = document.getElementById("languageSelector").value;
+            const lang = translations[selectedLang];
+        
+            const probabilities = [2 / 9, 2 / 9, 2 / 9, 1 / 9, 1 / 9, 1 / 9]; // Probabilities for A-F parts
+            const levels = Array.from({ length: 9 }, (_, i) => i); // Levels 0 to 8
+            const sections = ["A", "B", "C", "D", "E", "F"];
+        
+            // 1. Parse Current and Desired Levels
+            const current_level = Array.from({ length: sections.length }, (_, index) =>
+                parseInt(document.getElementById(`current_${index}`).value || "0")
+            );
+        
+            const desired_level = Array.from({ length: sections.length }, (_, index) =>
+                parseInt(document.getElementById(`desired_${index}`).value || "0")
+            );
+        
+            // 2. Parse Parts in Bag
+            const parts_in_bag = levels.map((levelIndex) =>
+                sections.map((_, sectionIndex) =>
+                    parseInt(document.getElementById(`parts_${String.fromCharCode(65 + sectionIndex)}_${levelIndex + 1}`).value || "0")
+                )
+            );
+        
+            // 3. Parse Boxes
+            const boxes = Array.from({ length: 7 }, (_, boxIndex) =>
+                parseInt(document.getElementById(`boxes${boxIndex + 1}`).value || "0")
+            );
+        
+            // 4. Calculate Desired and Current Values
+            const desired_value = desired_level.map((lvl) => Math.pow(3, lvl - 1)); // Value needed for desired levels
+            let current_value = current_level.map((lvl) => Math.pow(3, lvl - 1)); // Value from current levels
+        
+            // Add parts in the bag (converted to level 1 values)
+            current_value = current_value.map((value, index) =>
+                value +
+                parts_in_bag.reduce(
+                    (sum, row, levelIndex) => sum + row[index] * Math.pow(3, levelIndex), // Convert all parts to level 1 value
+                    0
+                )
+            );
+        
+            // Add parts expected from boxes
+            current_value = current_value.map((value, index) =>
+                value +
+                boxes.reduce(
+                    (sum, boxCount, boxLevel) => sum + boxCount * probabilities[index] * Math.pow(3, boxLevel),
+                    0
+                )
+            );
+        
+            // 5. Calculate Required Level 1 Boxes
+            const required_lvl1_boxes = Math.max(
+                ...desired_value.map((desired, index) => {
+                    const shortfall = Math.max(0, desired - current_value[index]);
+                    return shortfall / probabilities[index]; // Divide shortfall by probability
+                })
+            );
+        
+            // Output Results in the selected language
+            document.getElementById("results").innerHTML = `
+                <h3>${lang.resultsTitle}</h3>
+                <p><b>${lang.requiredBoxes}</b> ${Math.ceil(required_lvl1_boxes)}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
