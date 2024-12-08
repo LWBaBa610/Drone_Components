@@ -163,7 +163,7 @@
         // Language switch function
         function switchLanguage() {
             const selectedLang = document.getElementById("languageSelector").value;
-            const lang = translations[selectedLang];
+            const lang = translations[selectedLang] || translations.ko; // 기본값은 한국어
 
             // Update labels
             document.getElementById("title").innerText = lang.title;
@@ -189,6 +189,12 @@
             });
         }
 
+        // 페이지 로드 시 기본 언어 설정 (한국어)
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("languageSelector").value = "ko"; // 기본 언어를 한국어로 설정
+            switchLanguage();
+        });
+
         // Generate table rows
         const levelsTableBody = document.querySelector("#levelsTable tbody");
         translations.en.partsNames.forEach((part, index) => {
@@ -197,11 +203,11 @@
                 <td>${part}</td>
                 <td>
                     <input type="number" id="current_${index}" min="0" value="7">
-                    <img id="icon_current_${index}" class="icon" src="${part.toLowerCase()}_1.jpg" alt="Current Icon">
+                    <img id="icon_current_${index}" class="icon" src="fig/${part.toLowerCase()}_1.jpg" alt="Current Icon">
                 </td>
                 <td>
                     <input type="number" id="desired_${index}" min="0" value="8">
-                    <img id="icon_desired_${index}" class="icon" src="${part.toLowerCase()}_1.jpg" alt="Desired Icon">
+                    <img id="icon_desired_${index}" class="icon" src="fig/${part.toLowerCase()}_1.jpg" alt="Desired Icon">
                 </td>
             `;
             levelsTableBody.appendChild(row);
