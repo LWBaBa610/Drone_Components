@@ -61,7 +61,6 @@
     <!-- Results Section -->
     <div id="topControls">
         <div id="results" class="results">
-            <h3 id="resultsTitle">Results:</h3>
             <p>No results yet. Please calculate.</p>
         </div>
         <button id="calculateButton" onclick="calculate()">Calculate</button>
@@ -83,17 +82,34 @@
         </tbody>
     </table>
 
-    <!-- Drone Components in Bag -->
-    <h2 id="boxesTitle">2. Drone Components in Bag (Levels 1–7)</h2>
-    <div>
-        <label>Level 1: <input type="number" id="boxes1" min="0" value="0"></label>
-        <label>Level 2: <input type="number" id="boxes2" min="0" value="0"></label>
-        <label>Level 3: <input type="number" id="boxes3" min="0" value="0"></label>
-        <label>Level 4: <input type="number" id="boxes4" min="0" value="0"></label>
-        <label>Level 5: <input type="number" id="boxes5" min="0" value="0"></label>
-        <label>Level 6: <input type="number" id="boxes6" min="0" value="0"></label>
-        <label>Level 7: <input type="number" id="boxes7" min="0" value="0"></label>
-    </div>
+    <!-- Drone Component Boxes in Bag -->
+    <h2 id="boxesTitle">2. Drone Component Boxes in Bag (Levels 1–7)</h2>
+    <table id="boxesTable" border="1" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>Level</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>7</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="boxesLabel">Boxes</td>
+                <td><input type="number" id="boxes1" min="0" value="0"></td>
+                <td><input type="number" id="boxes2" min="0" value="0"></td>
+                <td><input type="number" id="boxes3" min="0" value="0"></td>
+                <td><input type="number" id="boxes4" min="0" value="0"></td>
+                <td><input type="number" id="boxes5" min="0" value="0"></td>
+                <td><input type="number" id="boxes6" min="0" value="0"></td>
+                <td><input type="number" id="boxes7" min="0" value="0"></td>
+            </tr>
+        </tbody>
+    </table>
 
     <!-- Current Parts in Bag -->
     <h2 id="partsTitle">3. Current Parts in Bag (Levels 1–9)</h2>
@@ -101,12 +117,7 @@
         <thead>
             <tr>
                 <th>Level</th>
-                <th>Radar</th>
-                <th>Turbo Engine</th>
-                <th>External Armor</th>
-                <th>Thermal Imager</th>
-                <th>Fuel Cell</th>
-                <th>Airborne Missile</th>
+                <!-- Part names will be dynamically updated -->
             </tr>
         </thead>
         <tbody>
@@ -136,27 +147,37 @@
         const translations = {
             en: {
                 title: "Expected Number of Drone Component Boxes",
+                langLabel: "Select Language:",
+                partHeader: "Part",
+                currentLevelHeader: "Current Level",
+                desiredLevelHeader: "Desired Level",
                 partsNames: ["Radar", "Turbo Engine", "External Armor", "Thermal Imager", "Fuel Cell", "Airborne Missile"],
                 current_desired_parts: "1. Current and Desired Levels of Drone Components",
-                boxesTitle: "2. Drone Components in Bag (Levels 1–7)",
+                boxesTitle: "2. Drone Component Boxes in Bag (Levels 1–7)",
+                boxesLabel: "Boxes",
                 partsTitle: "3. Current Parts in Bag (Levels 1–9)",
                 calculateButton: "Calculate",
                 clearButton: "Clear",
-                resultsTitle: "Results:",
                 noResults: "No results yet. Please calculate.",
-                requiredBoxes: "Expected number of Required Level 1 Boxes:",
+                requiredLv5Boxes: "Expected number of Required Level 5 Boxes:",
+                requiredLv1Boxes: "Expected number of Required Level 1 Boxes:"
             },
             ko: {
                 title: "드론 파츠 상자 필요수 기대값 계산기",
+                langLabel: "언어 선택",
+                partHeader: "파트",
+                currentLevelHeader: "현재 레벨",
+                desiredLevelHeader: "목표 레벨",   
                 partsNames: ["레이더", "터빈 엔진", "외부 장갑", "열화상 장비", "연료 전지", "공대공 미사일"],
                 current_desired_parts: "1. 현재 및 목표 드론 파츠 수준",
-                boxesTitle: "2. 드론 파츠 가방 (레벨 1–7)",
-                partsTitle: "3. 현재 가방 내 파츠 (레벨 1–9)",
+                boxesTitle: "2. 가방 내 드론 파츠 상자 (레벨 1–7)",
+                boxesLabel: "상자",
+                partsTitle: "3. 가방 보유중 파츠 (레벨 1–9)",
                 calculateButton: "계산",
                 clearButton: "초기화",
-                resultsTitle: "결과",
                 noResults: "아직 결과가 없습니다. 계산해 주세요.",
-                requiredBoxes: "필요한 레벨 1 상자 기대값:",
+                requiredLv5Boxes: "필요한 레벨 5 상자 기대값:",
+                requiredLv1Boxes: "필요한 레벨 1 상자 기대값:"
             },
         };
 
@@ -167,19 +188,21 @@
 
             // Update labels
             document.getElementById("title").innerText = lang.title;
-            document.getElementById("langLabel").innerText = lang.langLabel || "Select Language:";
+            document.getElementById("langLabel").innerText = lang.langLabel; //|| "Select Language:";
+            document.getElementById("partHeader").innerText = lang.partHeader;
+            document.getElementById("currentLevelHeader").innerText = lang.currentLevelHeader;
+            document.getElementById("desiredLevelHeader").innerText = lang.desiredLevelHeader;
             document.getElementById("current_desired_parts").innerText = lang.current_desired_parts;
             document.getElementById("boxesTitle").innerText = lang.boxesTitle;
+            document.getElementById("boxesLabel").innerText = lang.boxesLabel;
             document.getElementById("partsTitle").innerText = lang.partsTitle;
             document.getElementById("calculateButton").innerText = lang.calculateButton;
             document.getElementById("clearButton").innerText = lang.clearButton;
-            document.getElementById("resultsTitle").innerText = lang.resultsTitle;
             document.getElementById("results").innerHTML = `
-              <h3>${lang.resultsTitle}</h3>
               <p>${lang.noResults}</p>
           `;
 
-            // Update part names
+            // Update part names for Table 1 (levelsTable)
             // 파츠 이름 업데이트
             const rows = document.querySelectorAll("#levelsTable tbody tr");
             lang.partsNames.forEach((name, index) => {
@@ -187,6 +210,14 @@
                     rows[index].children[0].innerText = name;
                 }
             });
+
+            // Update headers for Table 3 (partsTable)
+            const partsTableHeaderRow = document.querySelector("#partsTable thead tr");
+            partsTableHeaderRow.innerHTML = '<th>Level</th>'; // Reset the header row to include "Level"
+            lang.partsNames.forEach((partName) => {
+                partsTableHeaderRow.innerHTML += `<th>${partName}</th>`;
+            });
+
         }
 
         // 페이지 로드 시 기본 언어 설정 (한국어)
@@ -194,7 +225,6 @@
             document.getElementById("languageSelector").value = "ko"; // 기본 언어를 한국어로 설정
             switchLanguage();
         });
-
         // Generate table rows
         const levelsTableBody = document.querySelector("#levelsTable tbody");
         translations.en.partsNames.forEach((part, index) => {
@@ -202,12 +232,12 @@
             row.innerHTML = `
                 <td>${part}</td>
                 <td>
-                    <input type="number" id="current_${index}" min="0" value="7">
-                    <img id="icon_current_${index}" class="icon" src="fig/${part.toLowerCase()}_1.jpg" alt="Current Icon">
+                    <input type="number" id="current_${index}" min="0" value="7", oninput="updateIcons(${index}, '${part.toLowerCase()}')">
+                    <img id="icon_current_${index}" class="icon" src="fig/${part.toLowerCase()}_lvl7.png" alt="Current Icon">
                 </td>
                 <td>
-                    <input type="number" id="desired_${index}" min="0" value="8">
-                    <img id="icon_desired_${index}" class="icon" src="fig/${part.toLowerCase()}_1.jpg" alt="Desired Icon">
+                    <input type="number" id="desired_${index}" min="0" value="8", oninput="updateIcons(${index}, '${part.toLowerCase()}')">
+                    <img id="icon_desired_${index}" class="icon" src="fig/${part.toLowerCase()}_lvl8.png" alt="Desired Icon">
                 </td>
             `;
             levelsTableBody.appendChild(row);
@@ -219,8 +249,8 @@
                 const currentLevel = document.getElementById(`current_${index}`).value;
                 const desiredLevel = document.getElementById(`desired_${index}`).value;
 
-                document.getElementById(`icon_current_${index}`).src = `${part.toLowerCase()}_${currentLevel}.jpg`;
-                document.getElementById(`icon_desired_${index}`).src = `${part.toLowerCase()}_${desiredLevel}.jpg`;
+                document.getElementById(`icon_current_${index}`).src = `fig/${part.toLowerCase()}_lvl${currentLevel}.png`;
+                document.getElementById(`icon_desired_${index}`).src = `fig/${part.toLowerCase()}_lvl${desiredLevel}.png`;
             });
         }
 
@@ -233,17 +263,6 @@
             switchLanguage(); // 언어별 기본 결과 텍스트 업데이트
         }
         function calculate() {
-            const translations = {
-                en: {
-                    resultsTitle: "Results:",
-                    requiredBoxes: "Expected number of Required Level 1 Boxes:",
-                },
-                ko: {
-                    resultsTitle: "결과:",
-                    requiredBoxes: "필요한 레벨 1 상자 기대값:",
-                },
-            };
-        
             // Fetch selected language
             const selectedLang = document.getElementById("languageSelector").value;
             const lang = translations[selectedLang];
@@ -295,20 +314,32 @@
                 )
             );
         
-            // 5. Calculate Required Level 1 Boxes
-            const required_lvl1_boxes = Math.max(
-                ...desired_value.map((desired, index) => {
+            // 5. Calculate Required Level 5 Boxes
+            const required_lvl5_boxes = desired_value.map((desired, index) => {
+                    const shortfall = Math.max(0, desired - current_value[index])/81;
+                    return shortfall / probabilities[index]; // Divide shortfall by probability
+            });
+            // Calculate Required Level 1 Boxes
+            const required_lvl1_boxes = desired_value.map((desired, index) => {
                     const shortfall = Math.max(0, desired - current_value[index]);
                     return shortfall / probabilities[index]; // Divide shortfall by probability
-                })
-            );
+            });
+            const maxRequired_lvl5_Boxes = Math.max(...required_lvl5_boxes.map(Math.ceil));
+            const maxRequired_lvl1_Boxes = Math.max(...required_lvl1_boxes.map(Math.ceil));
         
             // Output Results in the selected language
             document.getElementById("results").innerHTML = `
-                <h3>${lang.resultsTitle}</h3>
-                <p><b>${lang.requiredBoxes}</b> ${Math.ceil(required_lvl1_boxes)}</p>
+                <p><b>${lang.requiredLv5Boxes}</b> ${maxRequired_lvl5_Boxes} (${lang.requiredLv1Boxes} ${maxRequired_lvl1_Boxes})</p>
+                <ul>
+                    ${required_lvl5_boxes.map((val, idx) => `
+                        <li>${lang.partsNames[idx]}: ${Math.ceil(val)}</li>
+                    `).join("")}
+                </ul>
             `;
         }
     </script>
+    <footer style="margin-top: 30px; text-align: center; font-size: 0.9em; color: #555;">
+        Created by 610 Server [BosS] Ba Ba
+    </footer>
 </body>
 </html>
