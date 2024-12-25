@@ -232,11 +232,11 @@
             row.innerHTML = `
                 <td>${part}</td>
                 <td>
-                    <input type="number" id="current_${index}" min="0" value="7", oninput="updateIcons(${index}, '${part.toLowerCase()}')">
+                    <input type="number" id="current_${index}" min="1" value="7", oninput="updateIcons(${index}, '${part.toLowerCase()}')">
                     <img id="icon_current_${index}" class="icon" src="fig/${part.toLowerCase()}_lvl7.png" alt="Current Icon">
                 </td>
                 <td>
-                    <input type="number" id="desired_${index}" min="0" value="8", oninput="updateIcons(${index}, '${part.toLowerCase()}')">
+                    <input type="number" id="desired_${index}" min="1" value="8", oninput="updateIcons(${index}, '${part.toLowerCase()}')">
                     <img id="icon_desired_${index}" class="icon" src="fig/${part.toLowerCase()}_lvl8.png" alt="Desired Icon">
                 </td>
             `;
