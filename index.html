@@ -337,6 +337,79 @@
                 </ul>
             `;
         }
+        
+        // Save a cookie
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = `expires=${date.toUTCString()}`;
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
+        }
+
+        // Get a cookie
+        function getCookie(name) {
+            const nameEQ = `${name}=`;
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                while (cookie.charAt(0) === ' ') cookie = cookie.substring(1);
+                if (cookie.indexOf(nameEQ) === 0) return cookie.substring(nameEQ.length, cookie.length);
+            }
+            return null;
+        }
+        function saveInputValues() {
+            // Save current levels
+            const currentInputs = document.querySelectorAll("input[id^='current_']");
+            currentInputs.forEach(input => {
+                setCookie(input.id, input.value, 7); // Save for 7 days
+            });
+
+            // Save desired levels
+            const desiredInputs = document.querySelectorAll("input[id^='desired_']");
+            desiredInputs.forEach(input => {
+                setCookie(input.id, input.value, 7);
+            });
+
+            // Save box levels
+            const boxesInputs = document.querySelectorAll("input[id^='boxes']");
+            boxesInputs.forEach(input => {
+                setCookie(input.id, input.value, 7);
+            });
+
+            console.log('Input values saved!');
+        }
+        function restoreInputValues() {
+            // Restore current levels
+            const currentInputs = document.querySelectorAll("input[id^='current_']");
+            currentInputs.forEach(input => {
+                const value = getCookie(input.id);
+                if (value) input.value = value;
+            });
+
+            // Restore desired levels
+            const desiredInputs = document.querySelectorAll("input[id^='desired_']");
+            desiredInputs.forEach(input => {
+                const value = getCookie(input.id);
+                if (value) input.value = value;
+            });
+
+            // Restore box levels
+            const boxesInputs = document.querySelectorAll("input[id^='boxes']");
+            boxesInputs.forEach(input => {
+                const value = getCookie(input.id);
+                if (value) input.value = value;
+            });
+
+            console.log('Input values restored!');
+        }
+        // Bind event listeners
+        document.addEventListener("DOMContentLoaded", () => {
+            restoreInputValues(); // Restore values on page load
+
+            // Save values when inputs change
+            document.querySelectorAll("input[type='number']").forEach(input => {
+                input.addEventListener("input", saveInputValues);
+            });
+        });
     </script>
     <footer style="margin-top: 30px; text-align: center; font-size: 0.9em; color: #555;">
         Created by 610 Server [BosS]바 바
